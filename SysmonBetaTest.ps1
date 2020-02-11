@@ -1,4 +1,4 @@
-﻿# stop the sysmon service
+# stop the sysmon service
 stop-Service sysmon
 
 # clear the event log
@@ -64,6 +64,8 @@ foreach ($item in $NetEvents) {
 
     }
 
+    $RecordIDDiff = $EventsDetected.recordid -$item.RecordId
+    write-host "The count of events between Network Connection and DNSQuery was $($RecordIDDiff)."
 
 
 }
