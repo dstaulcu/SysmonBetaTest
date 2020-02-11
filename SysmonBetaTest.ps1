@@ -1,3 +1,5 @@
+<#
+
 # stop the sysmon service
 stop-Service sysmon
 
@@ -11,6 +13,7 @@ Start-Service sysmon
 # wait 60 seconds for some network connections to occur
 Start-Sleep -Seconds 60
 
+#>
 
 # review the events
 $events = Get-WInEvent -log "Microsoft-Windows-Sysmon/Operational"
@@ -28,6 +31,9 @@ ForEach ($Event in $Events) {
 
 # select the network connection events from content of log
 $NetEvents = $Events | Where-Object {$_.id -eq "3"}
+
+$counter_initiated = 0
+$counter_uninitiated = 0
 
 foreach ($item in $NetEvents) {
 
@@ -52,6 +58,12 @@ foreach ($item in $NetEvents) {
     # if a match is found print details of the network connection and dns query events
     if ($EventsDetected.Count -eq 1) {
 
+        if ($item.Initiated -eq "true") { $counter_initiated++}
+        if ($item.Initiated -eq "false") { $counter_unintiated++}
+
+        if ($item.Initiated -eq "true" -and $counter_initiated -ge 2) { break }
+        if ($item.Initiated -eq "false" -and $counter_unintiated -ge 2) { break }
+
         write-host ""
         write-host "*******************************************************"
         write-host "Network connection with sysmon reverse lookup detected."
@@ -62,10 +74,12 @@ foreach ($item in $NetEvents) {
         Write-Host "Sysmon Reverse Lookup:"
         $EventsDetected | select RecordID, UTCTime, ID, Image, QueryName, QueryResults, QueryStatus
 
+        $RecordIDDiff = $EventsDetected.recordid -$item.RecordId
+        write-host "The count of events between Network Connection and DNSQuery was $($RecordIDDiff)."
     }
 
-    $RecordIDDiff = $EventsDetected.recordid -$item.RecordId
-    write-host "The count of events between Network Connection and DNSQuery was $($RecordIDDiff)."
+
+    if ($counter_initiated -eq 1 -and $counter_unintiated -eq 1) { exit }
 
 
 }
