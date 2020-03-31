@@ -1,4 +1,7 @@
-﻿
+# Get sysmon schema into xml
+$sysmonSchemaPrint = & sysmon.exe -s
+$sysmonSchemaPrintXml = [xml]$sysmonSchemaPrint
+
 # spit out a new template file
 $events = $sysmonSchemaPrintXml.manifest.events.event | Where-Object {$_.name -notmatch "(SYSMON_ERROR|SYSMON_SERVICE_STATE_CHANGE|SYSMON_SERVICE_CONFIGURATION_CHANGE)"}
 
