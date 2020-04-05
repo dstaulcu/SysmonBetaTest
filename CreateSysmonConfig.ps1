@@ -1,33 +1,33 @@
+$sysmonPath = "$($env:windir)\sysmon.exe"
+if (!(Test-Path -Path $sysmonPath)) {
+    write-host "Sysmon.exe not present in $($sysmonPath). Exiting."
+    exit
+} 
+
+
 # Get sysmon schema into xml
-$sysmonSchemaPrint = & sysmon.exe -s
+$sysmonSchemaPrint = & $sysmonPath -s 2> $null | Select-String -Pattern "<"
 $sysmonSchemaPrintXml = [xml]$sysmonSchemaPrint
 
-# get sysmon events defined in schema except those known to not allow rules processing
+# spit out a new template file
 $events = $sysmonSchemaPrintXml.manifest.events.event | Where-Object {$_.name -notmatch "(SYSMON_ERROR|SYSMON_SERVICE_STATE_CHANGE|SYSMON_SERVICE_CONFIGURATION_CHANGE)"}
 
-# initialize an array of lines
+
 $xmlConfig = @()
 
-# printer header rows
 $xmlConfig += "<Sysmon schemaversion=`"$($sysmonSchemaPrintXml.manifest.schemaversion)`">"
 $xmlConfig += ""
-
-# todo:  add placeholders for other configs like HashingAlgorithm, etc.
 $xmlConfig += "`t<DnsLookup>False</DnsLookup>"
 $xmlConfig += ""
-
-# print xml comments and sample rule for each event which is responsive to rules engine
 $xmlConfig += "`t<EventFiltering>"
+
 foreach ($event in $events) {
-    $xmlConfig += ""
-    
-    # assume we want to print the rule group by default
     $printConfig = $true
-    
+    $xmlConfig += ""
     # print the section hearder listing ID (value), Description (template), and config file section id (rulename)
     $xmlConfig += "`t`t<!--SYSMON EVENT ID $($event.value) : $($event.template) [$($event.rulename)]-->"
 
-    # gather the various fields for event id and print them within xml comment 
+    # print the section hearder data elements of event
     $items = ""
     foreach ($item in $event.data | Select Name) {
         if ($items -eq "") {
@@ -38,7 +38,7 @@ foreach ($event in $events) {
     }
     $xmlConfig += "`t`t<!--DATA: $($items)-->"
 
-    # for event codes, skip print of sample rule group
+    #
     if ($event.value -match "12|13|17|19|20") { $printConfig = $false}
 
     if ($printConfig -eq $true) {
@@ -49,12 +49,11 @@ foreach ($event in $events) {
         $xmlConfig += "`t`t</RuleGroup>"
     }
 }
-
-# close out the xml
 $xmlConfig += ""
 $xmlConfig += "`t</EventFiltering>"
 $xmlConfig += ""
 $xmlConfig += "</Sysmon>"
 
-# throw the xml config into clipboard
+
+write-host "sample sysmon config file added to clipboard!"
 $xmlConfig | clip
