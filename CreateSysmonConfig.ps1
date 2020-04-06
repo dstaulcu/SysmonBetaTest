@@ -14,7 +14,10 @@ $events = $sysmonSchemaPrintXml.manifest.events.event | Where-Object {$_.name -n
 
 
 $xmlConfig = @()
-
+$xmlConfig += "<!--"
+$xmlConfig += "  FILTERING: Filter conditions available for use are: is, is not, contains, excludes, begin with, end with, less than, more than, image"
+$xmlConfig += "-->"
+$xmlConfig += ""
 $xmlConfig += "<Sysmon schemaversion=`"$($sysmonSchemaPrintXml.manifest.schemaversion)`">"
 $xmlConfig += ""
 $xmlConfig += "`t<DnsLookup>False</DnsLookup>"
