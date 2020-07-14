@@ -3,7 +3,7 @@ $DebugPreference = "Continue"           # Debug Mode
 $DebugPreference = "SilentlyContinue"   # Normal Mode
 #>
 
-# creates Sysmon config with all inputs except specified type
+# creates Sysmon config with all inputs disabled except specified type
 function make-sysmon-config ($sysmonPath, $name) 
 {
 
