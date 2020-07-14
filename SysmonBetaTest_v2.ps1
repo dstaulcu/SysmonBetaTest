@@ -6,6 +6,7 @@ TODO:
 - find alternative to PowerSploit Invoke-NinjaCopy for SYSMON_RAWACCESS_READ (https://devblogs.microsoft.com/scripting/use-powershell-to-interact-with-the-windows-api-part-1/)
 - expand checks to confirm that all fields have values and do not introduce whitespaces
 - expand checks to confirm that there are no collisions in schema of paramter names
+- expand checks to confirm reliabilty under heavy loads (low memory, low cpu, high network/disk i/o.)
 #>
 
 <#
