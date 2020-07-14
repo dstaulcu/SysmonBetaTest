@@ -153,8 +153,12 @@ if ((get-WindowsOptionalFeature -FeatureName "NetFX3" -Online).State -ne "Enable
     Enable-WindowsOptionalFeature -Online -FeatureName "NetFX3" -All
 }
 
+#Disable AV
+if ((Get-MpPreference).DisableRealtimeMonitoring -eq $false) {
+    Read-Host -Prompt "Please disable A/V and press ENTER to continue.."
+}
+
 # Ensure PowerSploit is present
-<#
 $ModulePath = "C:\Windows\system32\WindowsPowerShell\v1.0\Modules\PowerSploit"
 
 $url = "https://github.com/PowerShellMafia/PowerSploit/archive/master.zip"
@@ -175,8 +179,6 @@ Copy-Item -Path "$($extracted)\PowerSploit" -Destination $ModulePath -Recurse -F
 
 # remove any marks of the web/streams
 Get-ChildItem -path $ModulePath -Recurse | Unblock-File
-#>
-
 
 ################################################################################
 # SYSMON_CREATE_PROCESS: EventCode=1 RuleName=ProcessCreate
