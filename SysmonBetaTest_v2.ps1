@@ -126,7 +126,7 @@ function reset-sysmon ($sysmonPath, $configpath)
 }
 
 # gets event logs of specified type
-function get-eventlog ($logname, $id) 
+function get-eventlog ($logname) 
 {
     $events = Get-WInEvent -log $logname
     # Parse out the event message data            
@@ -207,9 +207,9 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $FilterItemsExpression = $FilterItems -join "|"
-$matchingEvents = $events | ?{$_.ProcessId -match "^$($FilterItemsExpression)$"}
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -match "^$($FilterItemsExpression)$"}
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
 } else {
@@ -244,9 +244,9 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $FilterItemsExpression = $FilterItems -join "|"
-$matchingEvents = $events | ?{$_.TargetFileName -match $($FilterItemsExpression)}
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.TargetFileName -match $($FilterItemsExpression)}
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
 } else {
@@ -280,8 +280,8 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
-$matchingEvents = $events | ?{$_.SourceIP -eq $warmup.SourceAddress.IPv4Address -and $_.destinationIP -eq $warmup.RemoteAddress.IPAddressToString}
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.SourceIP -eq $warmup.SourceAddress.IPv4Address -and $_.destinationIP -eq $warmup.RemoteAddress.IPAddressToString}
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
 } else {
@@ -312,8 +312,8 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
-$matchingEvents = $events | ?{$_.State -eq "started"}
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.State -eq "started"}
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
 } else {
@@ -347,9 +347,9 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $FilterItemsExpression = $FilterItems -join "|"
-$matchingEvents = $events | ?{$_.ProcessId -match "^$($FilterItemsExpression)$"}
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -match "^$($FilterItemsExpression)$"}
 
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
@@ -386,9 +386,9 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $FilterItemsExpression = "myfault"
-$matchingEvents = $events | ?{$_.ImageLoaded -match "$($FilterItemsExpression)"}
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ImageLoaded -match "$($FilterItemsExpression)"}
 
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
@@ -426,9 +426,9 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $FilterItemsExpression = $FilterItems -join "|"
-$matchingEvents = $events | ?{$_.ProcessId -match "^$($FilterItemsExpression)$"}
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -match "^$($FilterItemsExpression)$"}
 
 if ($matchingEvents) {
     write-host "Test passed"
@@ -463,8 +463,20 @@ for ($i = 1; $i -le $TestCount; $i++)
 
     ###########################################################################
     # Payload:
+    $ScriptPath = "$($env:temp)\$($TestName).ps1"
+    if (Test-Path -Path $ScriptPath) { Remove-Item -Path $ScriptPath -Force }
+    $Content = @()
+    $Content += "param([string]`$processid,[string]`$dll)"
+    $Content += "Import-Module PowerSploit"   
+    $Content += "if (Get-Process | ?{`$_.id -eq `$processid}) {"
+    $Content += "   write-host `"Process id `$(`$processid)`" exists"
+    $Content += "   if (Test-Path -Path `$dll) {"
+    $Content += "      write-host `"file `$(`$dll)`" exists"
+    $Content += "      Invoke-DllInjection -ProcessID `$processid -Dll `$dll"
+    $Content += "   }"
+    $Content += "}"
+    Set-Content -PassThru $ScriptPath -Value $Content
 
-    $ScriptPath = "C:\Users\David\Downloads\SYSMON_CREATE_REMOTE_THREAD.ps1"
     $dll = "C:\Windows\System32\advapi32.dll"
     $ProcessPath = "c:\windows\notepad.exe"
 
@@ -484,17 +496,11 @@ for ($i = 1; $i -le $TestCount; $i++)
 }
 Write-Progress -Activity "Conducting $($testname) test" -Completed         
 
-#Enable AV
-Set-MpPreference -DisableRealtimeMonitoring $false -MAPSReporting Basic
-
-#Reset PowerShell Execution Policy
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $FilterItemsExpression = $FilterItems -join "|"
-$matchingEvents = $events | ?{$_.TargetProcessId -match "^$($FilterItemsExpression)$"}
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.TargetProcessId -match "^$($FilterItemsExpression)$"}
 
 if ($matchingEvents) {
     write-host "Test passed"
@@ -553,9 +559,9 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $FilterItemsExpression = $FilterItems -join "|"
-$matchingEvents = $events | ?{$_.ProcessId -match "^$($FilterItemsExpression)$"}
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -match "^$($FilterItemsExpression)$"}
 
 if ($matchingEvents) {
     write-host "Test passed"
@@ -597,9 +603,9 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $FilterItemsExpression = $FilterItems -join "|"
-$matchingEvents = $events | ?{$_.ProcessId -eq $PID -and $_.TargetFilename -match $FilterItemsExpression}
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -eq $PID -and $_.TargetFilename -match $FilterItemsExpression}
 
 if ($matchingEvents) {
     write-host "Test passed"
@@ -635,8 +641,8 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
-$matchingEvents = $events | ?{$_.ProcessId -eq $PID -and $_.TargetObject -match "Software_DeleteMe" -and $_.EventType -eq "CreateKey"}
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -eq $PID -and $_.TargetObject -match "DeleteMe" -and $_.EventType -eq "CreateKey"}
 
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
@@ -674,8 +680,8 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
-$matchingEvents = $events | ?{$_.ProcessId -eq $PID -and $_.TargetObject -match "Software_DeleteMe" -and $_.EventType -eq "SetValue"}
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -eq $PID -and $_.TargetObject -match "DeleteMe" -and $_.EventType -eq "SetValue"}
 
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
@@ -703,8 +709,23 @@ for ($i = 1; $i -le $TestCount; $i++)
 
     ###########################################################################
     # Payload:
-    New-Item -Path HKLM:\Software\DeleteMe  | Out-Null
-    Rename-Item -Path HKLM:\Software\DeleteMe  -NewName "DeleteMe-v2" | Out-Null
+
+    # Create the key to rename if not exist
+    if (!(Test-Path -Path HKLM:\Software\DeleteMe)) {
+        New-Item -Path HKLM:\Software\DeleteMe | Out-Null
+    }   
+
+    # Prepare Regedit Jump to Key to Rename Manually
+    if (!(Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit)) {
+        New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit | Out-Null
+    }   
+    new-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit -Name LastKey -PropertyType String -Value "HKLM\Software\DeleteMe" -force | out-null
+
+    # launch rededit for user to rename manually
+    Start-Process -FilePath "Regedit.exe" -WindowStyle Normal
+    Read-Host -Prompt "Please rename DeleteMe Key in Regedit to DeleteMe-v2 and press ENTER to continue.."
+
+    # cleanup 
     remove-item -Path HKLM:\Software\DeleteMe-v2 | Out-Null 
     ###########################################################################
 
@@ -713,8 +734,8 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
-$matchingEvents = $events | ?{$_.ProcessId -eq $PID -and $_.TargetObject -match "Software_DeleteMe"} 
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.TargetObject -match "DeleteMe"} 
 
 if ($matchingEvents.count -eq $TestCount) {
     write-host "Test passed"
@@ -757,8 +778,8 @@ Write-Progress -Activity "Conducting $($testname) test" -Completed
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
-$matchingEvents = $events | ?{$_.ProcessId -eq $PID -and $_.TargetFilename -match "$($FilterItemsExpression):" -and $_.Hash -ne "Unknown"} 
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -eq $PID -and $_.TargetFilename -match "$($FilterItemsExpression):" -and $_.Hash -ne "Unknown"} 
 
 
 if ($matchingEvents.count -eq $TestCount) {
@@ -800,8 +821,8 @@ $FilterItemsExpression = $FilterItems -join "|"
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
-$matchingEvents = $events | ?{$_.ProcessId -eq $PID -and $_.PipeName -match $FilterItemsExpression} 
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.id -eq $EventID -and $_.ProcessId -eq $PID -and $_.PipeName -match $FilterItemsExpression} 
 
 
 if ($matchingEvents.count -eq $TestCount) {
@@ -860,7 +881,7 @@ $FilterItemsExpression = $FilterItems -join "|"
 
 # review the events
 Start-Sleep -Seconds 5
-$Events = get-eventlog -id $EventID -logname "Microsoft-Windows-Sysmon/Operational"
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
 $matchingEvents = $events | ?{$_.Id -eq $EventID -and $_.ProcessId -match $FilterItemsExpression -and $_.PipeName -eq '\testpipe'} 
 
 if ($matchingEvents.count -eq $TestCount) {
@@ -966,4 +987,3 @@ if ($matchingEvents.count -eq $TestCount) {
 } else {
     write-host "Test failed"
 }
-
