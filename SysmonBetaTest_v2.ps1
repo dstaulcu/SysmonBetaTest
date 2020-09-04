@@ -723,7 +723,7 @@ for ($i = 1; $i -le $TestCount; $i++)
 
     # launch rededit for user to rename manually
     Start-Process -FilePath "Regedit.exe" -WindowStyle Normal
-    Read-Host -Prompt "Please rename DeleteMe Key in Regedit to DeleteMe-v2 and press ENTER to continue.."
+    Read-Host -Prompt "Please rename HKLM\Software\DeleteMe Key in Regedit to DeleteMe-v2 and press ENTER to continue.."
 
     # cleanup 
     remove-item -Path HKLM:\Software\DeleteMe-v2 | Out-Null 
