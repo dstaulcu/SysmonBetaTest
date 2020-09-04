@@ -987,3 +987,77 @@ if ($matchingEvents.count -eq $TestCount) {
 } else {
     write-host "Test failed"
 }
+
+
+################################################################################
+# SYSMON_FILE_DELETE: EventCode=23 RuleName=FileDelete
+################################################################################
+$TestName = "SYSMON_FILE_DELETE"
+$EventID = 23
+write-host "Conducting "$($TestName)" test..."
+
+$configpath = make-sysmon-config -name $TestName -sysmonPath $sysmonPath
+reset-sysmon -sysmonPath $sysmonpath -configpath $configpath
+
+
+$FilterItems = @()
+for ($i = 1; $i -le $TestCount; $i++)
+{ 
+    $pctComplete = [math]::round(($i / $TestCount)*100)
+    Write-Progress -Activity "Conducting $($testname) test" -Status "$($pctComplete)% complete" -PercentComplete $pctComplete    
+
+    ###########################################################################
+    # Payload:
+    $TemporaryFile = New-TemporaryFile
+    Add-Content -Value "Hello World!" -Path $TemporaryFile.FullName
+    Remove-Item -Path $TemporaryFile.FullName -Force
+    ###########################################################################
+
+}
+Write-Progress -Activity "Conducting $($testname) test" -Completed
+
+# review the events
+Start-Sleep -Seconds 5
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.ID -eq $EventID -and $_.message -match $TemporaryFile.name}
+if ($matchingEvents.count -eq $TestCount) {
+    write-host "Test passed"
+} else {
+    write-host "Test failed"
+}
+
+
+################################################################################
+# SYSMON_CLIPBOARD: EventCode=24 RuleName=ClipboardChange
+################################################################################
+$TestName = "SYSMON_CLIPBOARD"
+$EventID = 24
+write-host "Conducting "$($TestName)" test..."
+
+$configpath = make-sysmon-config -name $TestName -sysmonPath $sysmonPath
+reset-sysmon -sysmonPath $sysmonpath -configpath $configpath
+
+
+$FilterItems = @()
+for ($i = 1; $i -le $TestCount; $i++)
+{ 
+    $pctComplete = [math]::round(($i / $TestCount)*100)
+    Write-Progress -Activity "Conducting $($testname) test" -Status "$($pctComplete)% complete" -PercentComplete $pctComplete    
+
+    ###########################################################################
+    # Payload:
+    Set-Clipboard -Value "Hello World!"
+    ###########################################################################
+
+}
+Write-Progress -Activity "Conducting $($testname) test" -Completed
+
+# review the events
+Start-Sleep -Seconds 5
+$Events = get-eventlog -logname "Microsoft-Windows-Sysmon/Operational"
+$matchingEvents = $events | ?{$_.ID -eq $EventID }
+if ($matchingEvents.count -eq $TestCount) {
+    write-host "Test passed"
+} else {
+    write-host "Test failed"
+}
