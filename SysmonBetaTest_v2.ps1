@@ -182,6 +182,32 @@ Copy-Item -Path "$($extracted)\PowerSploit" -Destination $ModulePath -Recurse -F
 Get-ChildItem -path $ModulePath -Recurse | Unblock-File
 
 ################################################################################
+# SYSMON DRIVER VERSION CHECK
+################################################################################
+$TestName = "Driver Version Check"
+Write-Progress -Activity "Conducting $($testname) test" -Completed
+
+if (Test-Path -Path $sysmonpath) {
+    $ExeFileVersion = ((Get-Item -Path $sysmonPath).VersionInfo).FileVersion
+}
+
+$SysmonDrvPath = "$($env:windir)\SysmonDrv.sys"
+if (Test-Path -Path $SysmonDrvPath) {
+    $DrvFileVersion = ((Get-Item -Path $SysmonDrvPath).VersionInfo).FileVersion
+} else {
+    write-host "Sysmon Driver not prsent. Exiting."
+    exit
+}
+
+if ($ExeFileVersion -eq $DrvFileVersion) {
+    write-host "Test passed"
+} else {
+    write-host "Test failed"
+}
+
+
+
+################################################################################
 # SYSMON_CREATE_PROCESS: EventCode=1 RuleName=ProcessCreate
 ################################################################################
 $TestName = "SYSMON_CREATE_PROCESS"
