@@ -1,0 +1,331 @@
+<form theme="light">
+  <label>Windows Memory Usage Analysis</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="host">
+      <label>host filter</label>
+      <default>DESKTOP-2UIVC6T</default>
+    </input>
+    <input type="text" token="process">
+      <label>process filter</label>
+      <default>sysmon</default>
+    </input>
+    <input type="text" token="span">
+      <label>charting timespan</label>
+      <default>1s</default>
+    </input>
+    <input type="dropdown" token="category_form" searchWhenChanged="true">
+      <label>metric</label>
+      <choice value="1">ALL</choice>
+      <choice value="2">Process Virtual Bytes</choice>
+      <choice value="3">Paging File % Usage</choice>
+      <choice value="4">Memory Pool Nonpaged Bytes</choice>
+      <choice value="5">Memory Pool Paged Bytes</choice>
+      <default>1</default>
+      <change>
+        <condition value="1">
+          <unset token="categ1"></unset>
+          <unset token="categ2"></unset>
+          <unset token="categ3"></unset>
+          <unset token="categ4"></unset>
+          <unset token="categ5"></unset>
+          <set token="categ1"></set>
+        </condition>
+        <condition value="2">
+          <unset token="categ1"></unset>
+          <unset token="categ2"></unset>
+          <unset token="categ3"></unset>
+          <unset token="categ4"></unset>
+          <unset token="categ5"></unset>
+          <set token="categ2"></set>
+        </condition>
+        <condition value="3">
+          <unset token="categ1"></unset>
+          <unset token="categ2"></unset>
+          <unset token="categ3"></unset>
+          <unset token="categ4"></unset>
+          <unset token="categ5"></unset>
+          <set token="categ3"></set>
+        </condition>
+        <condition value="4">
+          <unset token="categ1"></unset>
+          <unset token="categ2"></unset>
+          <unset token="categ3"></unset>
+          <unset token="categ4"></unset>
+          <unset token="categ5"></unset>
+          <set token="categ4"></set>
+        </condition>
+        <condition value="5">
+          <unset token="categ1"></unset>
+          <unset token="categ2"></unset>
+          <unset token="categ3"></unset>
+          <unset token="categ4"></unset>
+          <unset token="categ5"></unset>
+          <set token="categ5"></set>
+        </condition>
+      </change>
+      <initialValue>1</initialValue>
+    </input>
+    <input type="text" token="highlight">
+      <label>annotation highlight (regex)</label>
+      <default>.*</default>
+    </input>
+  </fieldset>
+  <row depends="$categ1$">
+    <panel>
+      <title>Process ($process$) - Private Bytes</title>
+      <chart>
+        <search type="annotation">
+          <query>source="c:\\programdata\\sysmonbetatest\\activity.log"  TestStatus=Begin host=$host$
+| table _time host TestName, TestStatus, TestDurationTotalSeconds 
+| eval annotation_label = TestStatus . " " . TestName . " test for " . TestDurationTotalSeconds . " seconds."
+| eval annotation_color = if(match(TestName,"(?i)$highlight$"),"#FF1493","#0000ff")
+            </query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <search>
+          <query>sourcetype="PerfmonMk:Process" instance=$process$ host=$host$ 
+| timechart span=$span$ avg(Private_Bytes) by host</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">0</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.splitBy">_aggregation</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Process ($process$) - Virtual Bytes</title>
+      <chart>
+        <search type="annotation">
+          <query>source="c:\\programdata\\sysmonbetatest\\activity.log"  TestStatus=Begin  host=$host$
+| table _time host TestName, TestStatus, TestDurationTotalSeconds 
+| eval annotation_label = TestStatus . " " . TestName . " test for " . TestDurationTotalSeconds . " seconds."
+| eval annotation_color = if(match(TestName,"(?i)$highlight$"),"#FF1493","#0000ff")
+            </query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <search>
+          <query>sourcetype="PerfmonMk:Process" instance=$process$ host=$host$ 
+| timechart span=$span$ avg(Virtual_Bytes) by host</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">0</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.splitBy">_aggregation</option>
+      </chart>
+    </panel>
+  </row>
+  <row depends="$categ1$">
+    <panel>
+      <title>Memory - Pool Nonpaged Bytes</title>
+      <chart>
+        <search type="annotation">
+          <query>source="c:\\programdata\\sysmonbetatest\\activity.log"  TestStatus=Begin  host=$host$
+| table _time host TestName, TestStatus, TestDurationTotalSeconds 
+| eval annotation_label = TestStatus . " " . TestName . " test for " . TestDurationTotalSeconds . " seconds."
+| eval annotation_color = if(match(TestName,"(?i)$highlight$"),"#FF1493","#0000ff")
+            </query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <search>
+          <query>sourcetype="PerfmonMk:Memory" host=$host$ 
+| timechart span=$span$ avg(Pool_Nonpaged_Bytes) by host</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">0</option>
+        <option name="trellis.size">large</option>
+        <option name="trellis.splitBy">_aggregation</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Memory - Pool Paged Bytes</title>
+      <chart>
+        <search type="annotation">
+          <query>source="c:\\programdata\\sysmonbetatest\\activity.log"  TestStatus=Begin  host=$host$
+| table _time host TestName, TestStatus, TestDurationTotalSeconds 
+| eval annotation_label = TestStatus . " " . TestName . " test for " . TestDurationTotalSeconds . " seconds."
+| eval annotation_color = if(match(TestName,"(?i)$highlight$"),"#FF1493","#0000ff")
+            </query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <search>
+          <query>sourcetype="PerfmonMk:Memory" host=$host$ 
+| timechart span=$span$ avg(Pool_Paged_Bytes) by host</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">0</option>
+        <option name="trellis.size">large</option>
+        <option name="trellis.splitBy">_aggregation</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Test Plan Milestones</title>
+      <table>
+        <search>
+          <query>source="C:\\ProgramData\\SysmonBetaTest\\activity.log" host=$host$
+| transaction host TestName maxspan=150s
+| table _time host TestName duration TestCount
+| sort - _time</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
