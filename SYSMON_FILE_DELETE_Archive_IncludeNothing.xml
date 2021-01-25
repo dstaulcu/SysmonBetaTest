@@ -1,0 +1,168 @@
+<Sysmon schemaversion="4.50">
+	<HashAlgorithms>*</HashAlgorithms>
+	<ArchiveDirectory>Sysmon</ArchiveDirectory>
+	<CheckRevocation/>
+	<EventFiltering>
+
+		<!--SYSMON EVENT ID 1 : Process Create [ProcessCreate]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, FileVersion, Description, Product, Company, OriginalFileName, CommandLine, CurrentDirectory, User, LogonGuid, LogonId, TerminalSessionId, IntegrityLevel, Hashes, ParentProcessGuid, ParentProcessId, ParentImage, ParentCommandLine-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ProcessCreate onmatch="include">
+			</ProcessCreate>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 2 : File creation time changed [FileCreateTime]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, PreviousCreationUtcTime-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileCreateTime onmatch="include">
+			</FileCreateTime>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 3 : Network connection detected [NetworkConnect]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, User, Protocol, Initiated, SourceIsIpv6, SourceIp, SourceHostname, SourcePort, SourcePortName, DestinationIsIpv6, DestinationIp, DestinationHostname, DestinationPort, DestinationPortName-->
+
+		<RuleGroup name="" groupRelation="or">
+			<NetworkConnect onmatch="include">
+			</NetworkConnect>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 5 : Process terminated [ProcessTerminate]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ProcessTerminate onmatch="include">
+			</ProcessTerminate>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 6 : Driver loaded [DriverLoad]-->
+		<!--DATA: RuleName, UtcTime, ImageLoaded, Hashes, Signed, Signature, SignatureStatus-->
+
+		<RuleGroup name="" groupRelation="or">
+			<DriverLoad onmatch="include">
+			</DriverLoad>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 7 : Image loaded [ImageLoad]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, ImageLoaded, FileVersion, Description, Product, Company, OriginalFileName, Hashes, Signed, Signature, SignatureStatus-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ImageLoad onmatch="include">
+			</ImageLoad>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 8 : CreateRemoteThread detected [CreateRemoteThread]-->
+		<!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, NewThreadId, StartAddress, StartModule, StartFunction-->
+
+		<RuleGroup name="" groupRelation="or">
+			<CreateRemoteThread onmatch="include">
+			</CreateRemoteThread>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 9 : RawAccessRead detected [RawAccessRead]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Device-->
+
+		<RuleGroup name="" groupRelation="or">
+			<RawAccessRead onmatch="include">
+			</RawAccessRead>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 10 : Process accessed [ProcessAccess]-->
+		<!--DATA: RuleName, UtcTime, SourceProcessGUID, SourceProcessId, SourceThreadId, SourceImage, TargetProcessGUID, TargetProcessId, TargetImage, GrantedAccess, CallTrace-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ProcessAccess onmatch="include">
+			</ProcessAccess>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 11 : File created [FileCreate]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileCreate onmatch="include">
+			</FileCreate>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 12 : Registry object added or deleted [RegistryEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, Image, TargetObject-->
+
+		<!--SYSMON EVENT ID 13 : Registry value set [RegistryEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, Image, TargetObject, Details-->
+
+		<!--SYSMON EVENT ID 14 : Registry object renamed [RegistryEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, Image, TargetObject, NewName-->
+
+		<RuleGroup name="" groupRelation="or">
+			<RegistryEvent onmatch="include">
+			</RegistryEvent>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 15 : File stream created [FileCreateStreamHash]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, Hash, Contents-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileCreateStreamHash onmatch="include">
+			</FileCreateStreamHash>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 17 : Pipe Created [PipeEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, PipeName, Image-->
+
+		<!--SYSMON EVENT ID 18 : Pipe Connected [PipeEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, PipeName, Image-->
+
+		<RuleGroup name="" groupRelation="or">
+			<PipeEvent onmatch="include">
+			</PipeEvent>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 19 : WmiEventFilter activity detected [WmiEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, Operation, User, EventNamespace, Name, Query-->
+
+		<!--SYSMON EVENT ID 20 : WmiEventConsumer activity detected [WmiEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, Operation, User, Name, Type, Destination-->
+
+		<!--SYSMON EVENT ID 21 : WmiEventConsumerToFilter activity detected [WmiEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, Operation, User, Consumer, Filter-->
+
+		<RuleGroup name="" groupRelation="or">
+			<WmiEvent onmatch="include">
+			</WmiEvent>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 22 : Dns query [DnsQuery]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, QueryName, QueryStatus, QueryResults, Image-->
+
+		<RuleGroup name="" groupRelation="or">
+			<DnsQuery onmatch="include">
+			</DnsQuery>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 23 : File Delete [FileDelete]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable, Archived-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileDelete onmatch="include">
+ 			</FileDelete>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 24 : Clipboard changed [ClipboardChange]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Session, ClientInfo, Hashes, Archived-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ClipboardChange onmatch="include">
+			</ClipboardChange>
+		</RuleGroup>
+				
+		<!--SYSMON EVENT ID 25 : Process Tampering [ProcessTampering]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Type-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ProcessTampering onmatch="include">
+			</ProcessTampering>
+		</RuleGroup>		
+
+	</EventFiltering>
+
+</Sysmon>
