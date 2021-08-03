@@ -1,4 +1,4 @@
-<manifest schemaversion="4.70" binaryversion="14.1">
+<manifest schemaversion="TBD" binaryversion="TBD">
   <configuration>
     <options>
       <!-- Command-line only options -->
@@ -55,6 +55,7 @@
       <data name="ParentProcessGuid" inType="win:GUID" />
       <data name="ParentProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="ParentImage" inType="win:UnicodeString" outType="xs:string" />
+      <data name="ParentImageUser" inType="win:UnicodeString" outType="xs:string" />	  	  
       <data name="ParentCommandLine" inType="win:UnicodeString" outType="xs:string" />
     </event>
     <event name="SYSMONEVENT_FILE_TIME" value="2" level="Informational" template="File creation time changed" rulename="FileCreateTime" version="5">
@@ -63,6 +64,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  	  
       <data name="TargetFilename" inType="win:UnicodeString" outType="xs:string" />
       <data name="CreationUtcTime" inType="win:UnicodeString" outType="xs:string" />
       <data name="PreviousCreationUtcTime" inType="win:UnicodeString" outType="xs:string" />
@@ -99,6 +101,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  	  
     </event>
     <event name="SYSMONEVENT_DRIVER_LOAD" value="6" level="Informational" template="Driver loaded" rulename="DriverLoad" version="4">
       <data name="RuleName" inType="win:UnicodeString" outType="xs:string" />
@@ -115,6 +118,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  	  
       <data name="ImageLoaded" inType="win:UnicodeString" outType="xs:string" />
       <data name="FileVersion" inType="win:UnicodeString" outType="xs:string" />
       <data name="Description" inType="win:UnicodeString" outType="xs:string" />
@@ -132,9 +136,11 @@
       <data name="SourceProcessGuid" inType="win:GUID" />
       <data name="SourceProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="SourceImage" inType="win:UnicodeString" outType="xs:string" />
+      <data name="SourceUser" inType="win:UnicodeString" outType="xs:string" />	  	  
       <data name="TargetProcessGuid" inType="win:GUID" />
       <data name="TargetProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="TargetImage" inType="win:UnicodeString" outType="xs:string" />
+      <data name="TargetUser" inType="win:UnicodeString" outType="xs:string" />	  	  
       <data name="NewThreadId" inType="win:UInt32" />
       <data name="StartAddress" inType="win:UnicodeString" outType="xs:string" />
       <data name="StartModule" inType="win:UnicodeString" outType="xs:string" />
@@ -146,6 +152,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  	  
       <data name="Device" inType="win:UnicodeString" outType="xs:string" />
     </event>
     <event name="SYSMONEVENT_ACCESS_PROCESS" value="10" level="Informational" template="Process accessed" rulename="ProcessAccess" version="3">
@@ -155,9 +162,11 @@
       <data name="SourceProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="SourceThreadId" inType="win:UInt32" />
       <data name="SourceImage" inType="win:UnicodeString" outType="xs:string" />
+      <data name="SourceUser" inType="win:UnicodeString" outType="xs:string" />	  
       <data name="TargetProcessGUID" inType="win:GUID" />
       <data name="TargetProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="TargetImage" inType="win:UnicodeString" outType="xs:string" />
+      <data name="TargetUser" inType="win:UnicodeString" outType="xs:string" />	  	  
       <data name="GrantedAccess" inType="win:HexInt32" />
       <data name="CallTrace" inType="win:UnicodeString" outType="xs:string" />
     </event>
@@ -167,6 +176,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
       <data name="TargetFilename" inType="win:UnicodeString" outType="xs:string" />
       <data name="CreationUtcTime" inType="win:UnicodeString" outType="xs:string" />
     </event>
@@ -177,6 +187,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
       <data name="TargetObject" inType="win:UnicodeString" outType="xs:string" />
     </event>
     <event name="SYSMONEVENT_REG_SETVALUE" value="13" level="Informational" template="Registry value set" rulename="RegistryEvent" ruledefault="exclude" version="2">
@@ -186,6 +197,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
       <data name="TargetObject" inType="win:UnicodeString" outType="xs:string" />
       <data name="Details" inType="win:UnicodeString" outType="xs:string" />
     </event>
@@ -196,6 +208,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
       <data name="TargetObject" inType="win:UnicodeString" outType="xs:string" />
       <data name="NewName" inType="win:UnicodeString" outType="xs:string" />
     </event>
@@ -206,6 +219,7 @@
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
       <data name="TargetFilename" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
       <data name="CreationUtcTime" inType="win:UnicodeString" outType="xs:string" />
       <data name="Hash" inType="win:UnicodeString" outType="xs:string" />
       <data name="Contents" inType="win:UnicodeString" outType="xs:string" />
@@ -223,6 +237,7 @@
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="PipeName" inType="win:UnicodeString" outType="xs:string" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
     </event>
     <event name="SYSMONEVENT_CONNECT_NAMEDPIPE" value="18" level="Informational" template="Pipe Connected" rulename="PipeEvent" ruledefault="exclude" version="1">
       <data name="RuleName" inType="win:UnicodeString" outType="xs:string" />
@@ -232,6 +247,7 @@
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="PipeName" inType="win:UnicodeString" outType="xs:string" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
     </event>
     <event name="SYSMONEVENT_WMI_FILTER" value="19" level="Informational" template="WmiEventFilter activity detected" rulename="WmiEvent" ruledefault="exclude" version="3">
       <data name="RuleName" inType="win:UnicodeString" outType="xs:string" />
@@ -271,6 +287,7 @@
       <data name="QueryStatus" inType="win:UnicodeString" outType="xs:string" />
       <data name="QueryResults" inType="win:UnicodeString" outType="xs:string" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
     </event>
     <event name="SYSMONEVENT_FILE_DELETE" value="23" level="Informational" template="File Delete archived" rulename="FileDelete" version="5">
       <data name="RuleName" inType="win:UnicodeString" outType="xs:string" />
@@ -290,6 +307,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
       <data name="Session" inType="win:UInt32" />
       <data name="ClientInfo" inType="win:UnicodeString" outType="xs:string" />
       <data name="Hashes" inType="win:UnicodeString" outType="xs:string" />
@@ -301,6 +319,7 @@
       <data name="ProcessGuid" inType="win:GUID" />
       <data name="ProcessId" inType="win:UInt32" outType="win:PID" />
       <data name="Image" inType="win:UnicodeString" outType="xs:string" />
+      <data name="User" inType="win:UnicodeString" outType="xs:string" />	  
       <data name="Type" inType="win:UnicodeString" outType="xs:string" />
     </event>
     <event name="SYSMONEVENT_FILE_DELETE_DETECTED" value="26" level="Informational" template="File Delete logged" rulename="FileDeleteDetected" version="5">
