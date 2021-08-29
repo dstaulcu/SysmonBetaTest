@@ -11,7 +11,7 @@ $subject = "Background check for Hopper, Grace B."
 $body = @"
 (U) Please provide background check results for: Hopper, Grace B.
 (U//FOUO) DOB - 12/09/1906
-(U//FOUO) SSN - 42-867-5309
+(U//FOUO) SSN - 867-42-5309
 "@
 
 
