@@ -13,7 +13,6 @@
 	<HashAlgorithms>*</HashAlgorithms>
 	<DnsLookup>False</DnsLookup>
 	<CheckRevocation>False</CheckRevocation>
-	<CaptureClipboard></CaptureClipboard>
 
 	<EventFiltering>
 
@@ -220,7 +219,7 @@
 			<ClipboardChange onmatch="include">
 				<Rule groupRelation="or" name="">			
 					<Image condition="end with">SysmonSimulator.exe</Image>
-				</Rule>									
+				</Rule>
 			</ClipboardChange>
 		</RuleGroup>
 
