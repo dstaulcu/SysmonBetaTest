@@ -1,0 +1,251 @@
+<!--
+  FILTERING: Filter conditions available for use are: is,is not,contains,contains any,is any,contains all,excludes,excludes any,excludes all,begin with,not begin with,end with,not end with,less than,more than,image
+  
+  COMPOUND RULE GROUP EXAMPLE:
+  <Rule groupRelation="and" name="">
+     <ID condition="contains">SomeValue</ID>
+     <Description condition="contains">SomeValue</Description>
+  </Rule>
+-->
+
+<Sysmon schemaversion="4.81">
+
+	<HashAlgorithms>*</HashAlgorithms>
+	<DnsLookup>False</DnsLookup>
+	<CheckRevocation>False</CheckRevocation>
+	<CaptureClipboard></CaptureClipboard>
+
+	<EventFiltering>
+
+		<!--SYSMON EVENT ID 255 : Error report []-->
+		<!--DATA: UtcTime, ID, Description-->
+
+		<!--SYSMON EVENT ID 1 : Process Create [ProcessCreate]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, FileVersion, Description, Product, Company, OriginalFileName, CommandLine, CurrentDirectory, User, LogonGuid, LogonId, TerminalSessionId, IntegrityLevel, Hashes, ParentProcessGuid, ParentProcessId, ParentImage, ParentCommandLine, ParentUser-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ProcessCreate onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+					<ParentImage condition="end with">SysmonSimulator.exe</ParentImage>
+				</Rule>			
+			</ProcessCreate>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 2 : File creation time changed [FileCreateTime]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, PreviousCreationUtcTime, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileCreateTime onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>						
+			</FileCreateTime>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 3 : Network connection detected [NetworkConnect]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, User, Protocol, Initiated, SourceIsIpv6, SourceIp, SourceHostname, SourcePort, SourcePortName, DestinationIsIpv6, DestinationIp, DestinationHostname, DestinationPort, DestinationPortName-->
+
+		<RuleGroup name="" groupRelation="or">
+			<NetworkConnect onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>						
+			</NetworkConnect>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 4 : Sysmon service state changed []-->
+		<!--DATA: UtcTime, State, Version, SchemaVersion-->
+
+		<!--SYSMON EVENT ID 5 : Process terminated [ProcessTerminate]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ProcessTerminate onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>						
+			</ProcessTerminate>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 6 : Driver loaded [DriverLoad]-->
+		<!--DATA: RuleName, UtcTime, ImageLoaded, Hashes, Signed, Signature, SignatureStatus-->
+
+		<RuleGroup name="" groupRelation="or">
+			<DriverLoad onmatch="exclude">
+			</DriverLoad>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 7 : Image loaded [ImageLoad]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, ImageLoaded, FileVersion, Description, Product, Company, OriginalFileName, Hashes, Signed, Signature, SignatureStatus, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ImageLoad onmatch="include">
+				<Rule groupRelation="and" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+					<ImageLoaded condition="end with">crypt32.dll</ImageLoaded>					
+				</Rule>						
+			</ImageLoad>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 8 : CreateRemoteThread detected [CreateRemoteThread]-->
+		<!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, NewThreadId, StartAddress, StartModule, StartFunction, SourceUser, TargetUser-->
+
+		<RuleGroup name="" groupRelation="or">
+			<CreateRemoteThread onmatch="include">
+				<Rule groupRelation="or" name="">
+					<SourceImage condition="end with">SysmonSimulator.exe</SourceImage>
+				</Rule>						
+			</CreateRemoteThread>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 9 : RawAccessRead detected [RawAccessRead]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Device, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<RawAccessRead onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>						
+			</RawAccessRead>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 10 : Process accessed [ProcessAccess]-->
+		<!--DATA: RuleName, UtcTime, SourceProcessGUID, SourceProcessId, SourceThreadId, SourceImage, TargetProcessGUID, TargetProcessId, TargetImage, GrantedAccess, CallTrace, SourceUser, TargetUser-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ProcessAccess onmatch="include">
+				<Rule groupRelation="or" name="">
+					<SourceImage condition="end with">SysmonSimulator.exe</SourceImage>
+				</Rule>									
+			</ProcessAccess>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 11 : File created [FileCreate]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileCreate onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</FileCreate>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 12 : Registry object added or deleted [RegistryEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, Image, TargetObject, User-->
+
+		<!--SYSMON EVENT ID 13 : Registry value set [RegistryEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, Image, TargetObject, Details, User-->
+
+		<!--SYSMON EVENT ID 14 : Registry object renamed [RegistryEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, Image, TargetObject, NewName, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<RegistryEvent onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</RegistryEvent>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 15 : File stream created [FileCreateStreamHash]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, Hash, Contents, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileCreateStreamHash onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</FileCreateStreamHash>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 16 : Sysmon config state changed []-->
+		<!--DATA: UtcTime, Configuration, ConfigurationFileHash-->
+
+		<!--SYSMON EVENT ID 17 : Pipe Created [PipeEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, PipeName, Image, User-->
+
+		<!--SYSMON EVENT ID 18 : Pipe Connected [PipeEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, ProcessGuid, ProcessId, PipeName, Image, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<PipeEvent onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</PipeEvent>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 19 : WmiEventFilter activity detected [WmiEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, Operation, User, EventNamespace, Name, Query-->
+
+		<!--SYSMON EVENT ID 20 : WmiEventConsumer activity detected [WmiEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, Operation, User, Name, Type, Destination-->
+
+		<!--SYSMON EVENT ID 21 : WmiEventConsumerToFilter activity detected [WmiEvent]-->
+		<!--DATA: RuleName, EventType, UtcTime, Operation, User, Consumer, Filter-->
+
+		<RuleGroup name="" groupRelation="or">
+			<WmiEvent onmatch="exclude">
+			</WmiEvent>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 22 : Dns query [DnsQuery]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, QueryName, QueryStatus, QueryResults, Image, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<DnsQuery onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</DnsQuery>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 23 : File Delete archived [FileDelete]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable, Archived-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileDelete onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</FileDelete>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 24 : Clipboard changed [ClipboardChange]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Session, ClientInfo, Hashes, Archived, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ClipboardChange onmatch="include">
+				<Rule groupRelation="or" name="">			
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</ClipboardChange>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 25 : Process Tampering [ProcessTampering]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Type, User-->
+
+		<RuleGroup name="" groupRelation="or">
+			<ProcessTampering onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</ProcessTampering>
+		</RuleGroup>
+
+		<!--SYSMON EVENT ID 26 : File Delete logged [FileDeleteDetected]-->
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable-->
+
+		<RuleGroup name="" groupRelation="or">
+			<FileDeleteDetected onmatch="include">
+				<Rule groupRelation="or" name="">
+					<Image condition="end with">SysmonSimulator.exe</Image>
+				</Rule>									
+			</FileDeleteDetected>
+		</RuleGroup>
+
+	</EventFiltering>
+
+</Sysmon>
