@@ -1,6 +1,8 @@
 <#
-# clear existing audit policies
-& auditpol /clear  
+note:  this must run as local admin
+
+# clear existing audit policies - this could fire a notable to security teams if endpoiont is corporately managed
+& auditpol /clear   
 
 # enable detailed tracking success auditing to ensure windows security log will receive process creation events
 & auditpol /set /category:"Detailed Tracking" /success:enable   
