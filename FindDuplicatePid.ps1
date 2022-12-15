@@ -72,13 +72,13 @@ while ($true)
 
         # summartize the recordset we have accumulated
 
-        write-host "$(get-date) - Found $($NewEventCounter) new processes in last polling interval!  There are $($records.count) process creation events in records cache."
+        write-verbose "$(get-date) - Found $($NewEventCounter) new processes in last polling interval!  There are $($records.count) process creation events in records cache."
 
         $Groups = $Records | Group-Object -Property NewProcessID | ?{$_.count -gt 1}
 
         if ($Groups.count -gt 0) {
             write-host "$(get-date) - Found a process id that exists more than once in records cache. Exiting"
-            $Groups
+            $Groups[0].Group
             break }
 
     } else {
