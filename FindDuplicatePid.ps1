@@ -37,6 +37,8 @@ while ($true)
 
     $LookbackTime = (get-date).AddMilliseconds($EventlogLookbackMilliseconds * -1)
     write-verbose "$(get-date) - Checking for new events since $($LookbackTime) - [$($EventlogLookbackMilliseconds) ms ago]."
+    
+    # query the windows security eventlog applying the xmlfilter we constructed previously. sort results on recordid
     $NewEvents = Get-WinEvent -LogName "Security"  -FilterXPath $xmlfilter -ErrorAction SilentlyContinue | Sort-Object -Property RecordID 
 
     if ($NewEvents) {
