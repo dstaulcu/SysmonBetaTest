@@ -52,7 +52,7 @@ while ($true)
 
                 $NewProcessIdString = [convert]::tostring($event.NewPRocessId,10)
 
-                write-host "$(get-date) - Found RecordID $($Event.RecordId) with TimeCreated $($Event.TimeCreated) where PID was $($NewProcessIdString) and new process name was $($Event.NewProcessName)." -ForegroundColor Green
+                write-verbose "$(get-date) - Found RecordID $($Event.RecordId) with TimeCreated $($Event.TimeCreated) where PID was $($NewProcessIdString) and new process name was $($Event.NewProcessName)."
 
                 $Record = [ordered]@{
                     TimeCreated = $Event.TimeCreated
@@ -72,7 +72,7 @@ while ($true)
 
         # summartize the recordset we have accumulated
 
-        write-verbose "$(get-date) - Found $($NewEventCounter) new processes in last polling interval!  There are $($records.count) process creation events in records cache."
+        write-host "$(get-date) - Found $($NewEventCounter) new processes in last polling interval!  There are $($records.count) process creation events in records cache."
 
         $Groups = $Records | Group-Object -Property NewProcessID | ?{$_.count -gt 1}
 
