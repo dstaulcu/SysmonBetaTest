@@ -10,7 +10,7 @@ $LastRecordId = 0
 $xmlfilter = @"
 <QueryList>
   <Query Id="0" Path="Security">
-    <Select Path="Security">*[System[(EventID=4688) and TimeCreated[timediff(@SystemTime) &lt;= &&&PollingFrequencySeconds&&& ]]]</Select>
+    <Select Path="Security">*[System[(EventID=4688) and TimeCreated[timediff(@SystemTime) &lt;= &&&EventlogLookbackMilliseconds&&& ]]]</Select>
   </Query>
 </QueryList>
 "@
@@ -22,7 +22,7 @@ $VerbosePreference = 'Continue'
 
 
 
-$xmlfilter = $xmlfilter -replace '&&&PollingFrequencySeconds&&&',$($PollingFrequencySeconds*1000*2)
+$xmlfilter = $xmlfilter -replace '&&&EventlogLookbackMilliseconds&&&',$($EventlogLookbackMilliseconds)
 
 $Records = New-Object System.Collections.ArrayList
 
