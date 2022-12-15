@@ -12,6 +12,7 @@ $PollingFrequencySeconds = 5
 $EventlogLookbackMilliseconds = $PollingFrequencySeconds * 1000 * 3
 $LastRecordId = 0
 
+# define xmlfilter to be interpreted by get-wineventlog inside of a here-string
 $xmlfilter = @"
 <QueryList>
   <Query Id="0" Path="Security">
